@@ -1,0 +1,567 @@
+/*通用*/
+*{box-sizing:border-box;}
+body {
+
+    font: 12px "microsoft yahei", Arial, Helvetica, sans-serif;
+    color:#666;
+    margin:0px;
+    padding:0px;
+    width:1211px;
+    margin:0 auto;
+}
+ul,li,p,h1,h2,h3,h4,h5,h6,dl,dt,dd {
+    margin:0px;
+    padding:0px;
+    border:none;
+    list-style:none;
+}
+input {border:none;}
+.lf   {float:left;}
+.rt  {float:right;}
+.clear  {clear:both;}
+
+a  {
+    color:#666;
+    text-decoration:none;
+}
+a:hover {
+    text-decoration:none;
+    color:#ff0700;
+}
+
+img {
+    vertical-align : bottom;
+}
+
+table{
+    font-size:16px;
+}
+table thead tr th{
+    text-align:center;
+}
+table thead tr th:hover{
+    cursor: pointer;
+}
+
+.width45{width:45%;}
+
+/***** 主体内容 **********/
+#main{
+    margin-top:30px;
+}
+/**** 左边导航 *******/
+ul.lf.pannelLeft{
+    width: 200px;
+    height:588px;
+    background: #fafafa;
+    border:1px solid #aaa;
+}
+
+ul.lf.pannelLeft{
+    font-size:16px;
+}
+
+ul.lf.pannelLef li{
+    width : 100%;
+
+}
+
+ul.lf.pannelLeft > li > a{
+    display:inline-block;
+    width:100%;
+    padding:5px;
+    padding-left:30px;
+    height:36px;
+    line-height:36px;
+    border-bottom:1px solid #fff;
+}
+
+ul.lf.pannelLeft> li > a:hover,.active{
+    background:#fff;
+    cursor:pointer;
+    border-bottom:1px solid #aaa;
+    text-decoration:none;
+}
+
+/****** 右边的主体内容 ********/
+#mainContent{
+    margin-left:220px;
+    width:81%;
+}
+
+/******** 合作方录入及查看权限*********/
+/*.container{
+    width:100%;
+    margin:20px;
+}
+div.container div{
+    width:800px;
+    margin:0 auto;
+    font-size:1.2em;
+}
+div.container div div input{
+    border:1px solid #aaa;
+    font-size:16px;
+    margin-top:10px;
+    margin-left:0;
+    margin-right:20px;
+    width : 100px;
+    padding:5px 0;
+    padding-left:3px;
+}*/
+
+#searchAppend{
+      margin-top:30px;
+}
+
+.conSearchInput{
+    border : 1px solid #aaa;
+    display:inline-block;
+    margin-right : 20px;
+    margin-bottom : 20px;
+    padding-left:5px;
+}
+
+.searchInput{
+    width:130px;
+    padding:7px 5px;
+    outline:none;
+    margin-bottom:1px;
+}
+
+tr td a:hover{
+    cursor:pointer;
+}
+
+.container .row table{
+    position:relative;
+}
+
+/**合作方新增与编辑页面***/
+#editContent{
+    position:absolute;
+    left:50%;
+    top:220px;
+    z-index:5;
+}
+#input-form{
+    margin-bottom:20px;
+}
+.saveReturn{
+    margin:10px 20px;
+    /*margin-left:18px;*/
+}
+
+
+/******** 登录框 ***********/
+.modal
+{
+    position : fixed;
+    left : 0;
+    right: 0;
+    top : 0;
+    bottom : 0;
+    background : rgba(153,197,157,  1);
+    /*opacity :  会导致所有内容全部半透明*/
+    /*display : none;*/
+}
+
+.modal-dialog
+{
+    position: absolute;
+    left:50%;
+    top: 38.2%;
+    width : 350px;
+    /*margin : 100px auto;*/
+    margin-left:-175px;
+    margin-top:-147px;
+}
+
+.modal-content
+{
+    background : #fff;
+    min-height : 100px;
+    border-radius : 3px;
+}
+
+.modal-content span
+{
+    display : block;
+    margin-left : 20px;
+    margin-bottom : 20px;
+    padding-top : 10px;
+    font-size : 16px;
+}
+
+#login-form input
+{
+    border : 1px solid #aaa;
+    margin-left : 20px;
+    margin-bottom : 20px;
+    width : 305px;
+    padding : 8px 5px;
+}
+
+input.alert
+{
+    background-color : #FEEAE1;
+    color : #BC7C76;
+    border-color: #C69594;
+}
+#user
+{
+    border-color : #98A7BE;
+}
+#submit
+{
+    text-align : center;
+    background : #f00;
+    color : #fff;
+}
+/***用户登录提醒 ***/
+.msg-warn{
+    width:305px;
+    margin-left:20px;
+    margin-bottom:10px;
+    padding:5px 0;
+    padding-left:5px;
+    border:1px solid #eee;
+    background:#FFF6D2;
+}
+
+.msg-warn b{
+    position:relative;
+    top:2px;
+    display:inline-block;
+    width:20px;
+    height:17px;
+    background:url("../img/pwd-icons-new01.png") no-repeat -24px -299px;
+}
+
+/***密码输入错误时提醒框 ***/
+.msg-error{
+    width:305px;
+    margin-left:20px;
+    margin-bottom:10px;
+    padding:5px 0;
+    padding-left:5px;
+    border:1px solid #faccc6;
+    background:#FFEBEB;
+    color:#e4393c;
+}
+
+.msg-error b{
+    position:relative;
+    top:2px;
+    display:inline-block;
+    width:22px;
+    height:16px;
+    background:url("../img/pwd-icons-new01.png") no-repeat -0px -350px;
+}
+
+/****有户登录的左边小图****/
+.icon-uname{
+    background:url("../img/pwd-icons-new01.png") no-repeat 0 0;
+}
+.icon-pwd{
+    background:url("../img/pwd-icons-new01.png") no-repeat 0 -52px;
+}
+#login-form input.icon-uname{padding-left:44px;}
+
+#login-form input.icon-pwd{padding-left:44px;}
+
+#login-form div{
+    padding:0;
+    margin:0;
+    margin-left:20px;
+    margin-bottom:20px;
+}
+#login-form div input{
+    margin:0;
+    padding:0;
+    width:20px;
+    vertical-align:middle;
+}
+
+/******** register user ***************/
+.input{
+    border:1px solid #aaa;
+    margin-left : 20px;
+    margin-bottom : 5px;
+    margin-top:10px;
+    width : 310px;
+    padding-left:5px;
+    padding-right:0;
+    overflow:hidden;
+}
+.regInput{
+    width:180px;
+    padding:8px 5px;
+    outline:none;
+}
+
+.prompt{
+    display:inline-block;
+    margin-left:20px;
+    width:13px;
+    height:13px;
+    background:url("../img/pwd-icons-new01.png") no-repeat -26px -400px;
+}
+
+.submit
+{
+    text-align : center;
+    background : #f00;
+    color : #fff;
+    font-size:1.3em;
+    font-weight:bold;
+    padding:8px;
+    margin-bottom:20px;
+}
+.registerCheckbox {
+    vertical-align:middle;
+    position:relative;
+    top:-2px;
+    margin-left:20px;
+    width:18px;
+    height:18px;
+}
+canvas:hover{
+    cursor:pointer;
+}
+
+.button{
+    border:none;
+    font-weight:bold;
+    margin:0;
+    padding:7px 11px;
+}
+
+div.input button:hover{cursor:pointer;}
+/***********register end****************/
+
+/***** checkBack ********/
+div.navbar-header{
+    color:#3879D9;
+    font-size:1.2em;
+}
+div.navbar-header ul li a:hover{
+    color:#3879D9;
+}
+
+table.table tbody tr td select{
+    width:100%;
+    border:0;
+}
+
+/***顶部导航条 *******/
+.navbar-default .navbar-text{color:#3879D9; font-weight:bold;}
+
+.navbar-default .navbar-nav >li >a{color:#3879D9;}
+
+.navbar-default .navbar-nav >li>a:hover{ color:#f00;cursor:pointer;}
+
+/*** 修改密码框 ********/
+#changePwd{
+    display:none;
+    top:220px;
+    /*top:50px;
+    left: 38%;*/
+    left:50%;
+    margin-left: -175px;
+}
+
+.title{
+    margin-right:20px;
+}
+.title:after{
+    content:"";
+    display:block;
+    clear:both;
+}
+
+.close{
+    width:31px;
+    height:31px;
+    line-height:15px;
+    text-align:center;
+}
+.return{
+    text-align : center;
+    font-size:1.3em;
+    font-weight:bold;
+    margin-top:-8px;
+    padding:8px;
+    margin-bottom:20px;
+}
+
+#confirm{
+    margin-right:20px;
+    margin-bottom:20px;
+}
+
+#confirm:after{
+    content:"";
+    display:block;
+    clear:both;
+}
+
+.inputbtn{
+    border:1px solid #aaa;
+    margin-left : 20px;
+    margin-bottom : 5px;
+    margin-top:10px;
+    width:43%;
+    padding-left:5px;
+    padding-right:0;
+}
+
+.regSelect{
+    width:180px;
+    padding:8px 5px;
+    border:none;
+    outline:none;
+}
+/****** 输入框的成功与否的 ****/
+.marginLeft{
+    font-size : 18px;
+    margin-left:20px;
+}
+
+/** 编辑窗口 **/
+#editWindow,.editWindow{
+    display:none;
+    top:220px;
+    left: 50%;
+}
+._modal-dialog{
+    position :absolute;
+}
+
+#editConfirm{
+    margin-right:20px;
+    margin-bottom:20px;
+}
+
+#editConfirm:after{
+    content:"";
+    display:block;
+    clear:both;
+}
+
+/***弹出框(查找不到数据时) **/
+#selectAlert {
+    display:none;
+    position:absolute;
+    top:390px;
+    left:40%;
+}
+.alertText{
+    font-size:1.3em;
+    color: #f00;
+    margin-bottom:30px;
+    text-align:center;
+}
+
+#table-data tbody tr td.editArea{padding: 8px 0;}
+
+#table-data tbody tr td input{
+    background:transparent;
+    text-align:center;
+    width:100px;
+    outline:none;
+}
+
+.a_link{
+    display:block;
+    width:40px;
+}
+
+/* 重新设置用户密码*/
+#resetPwd{
+   display:none;
+    top:220px;
+    left: 50%;
+    margin-left:-175px;
+}
+
+#confirm_reset{
+    margin-right:20px;
+    margin-bottom:20px;
+}
+
+#confirm_reset:after{
+    content:"";
+    display:block;
+    clear:both;
+}
+
+
+/**** 合作列表的弹出框 *********/
+.selectAlert {
+    display:none;
+    position:absolute;
+    top:380px;
+    left:50%;
+}
+
+/********* 新增输入框自动补全 ********/
+.autoAppend{
+    display:none;
+    float:left;position:absolute;top:25px;left:60px; background:#fff;
+    font-size:15px;
+    z-index:1;
+}
+
+.autoAppend li{
+    width:170px;height:36px;padding-left:5px;line-height:36px;
+}
+
+.autoAppend li:hover,.hover{
+    background:#eee;
+    color:#5FA7FD;
+}
+#eidtBack-form div.input{overflow:visible;}
+
+/*分页显示 */
+.pager_custom
+{
+    list-style : none;
+    padding : 0;
+    overflow: hidden;
+    margin-top : 10px;
+    margin-bottom:20px;
+}
+
+.pager_custom li
+{
+    display : inline-block;
+    border : 1px solid #ddd;
+    /*padding : 8px 10px;*/
+    border-radius: 3px;
+    margin : 0 5px;
+    overflow:hidden;
+}
+.pager_custom li > a{
+    display : inline-block;
+    padding:8px 10px;
+}
+
+.pager_custom li.active
+{
+    border : none;
+}
+
+.pager_custom li.active a
+{
+    color : #e4393c;
+    font-weight : bold;
+    cursor : default;
+    text-decoration: none;
+}
+
+
+
+
+
+

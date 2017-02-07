@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>appholly 自动读取,保存数据</title>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+	<h3>从45.32.253.162 adv的callbacklog中读取数据，再保存到dataquery的products表中</h3>
+	<h3>请不要关闭窗口</h3>
+	<h3 id="show"></h3>
+
+<script src="../js/jquery-1.11.2.min.js"></script>
+<script>
+	+function(){
+		//var now = new Date().getTime();   //获取当前时间
+		var costTimes = 0;               //读取与保存数据后所花费的时间
+		var show = $("#show");
+		var partners = ['有乐通','snt','ymb'];  //合作类型
+
+		var i = 0;   //用于计数据，看partners是否执行完毕
+		/*
+		var timer = setInterval(function(){
+			getAdvSaveToProducts(partners);
+			
+		},15*60*1000);     //十五分执行一次
+		*/
+		getAdvSaveToProducts(partners);
+
+		function getAdvSaveToProducts(partners){
+			var now = new Date().getTime();
+			$.get("getAdvData.php?partner=" + encodeURIComponent(partners[i])).always(function(data){
+				var data = data.responseText;
+				i++;
+
+				if(!partners[i]){  //当所有表多读取，保存完毕后
+					costTimes = new Date().getTime() - now;
+					$("#show").html(data + "总共花费时间:" + costTimes + "毫秒");
+					//var timer = setTimeout(closeWindow,8*60*1000);
+					i = 0;
+					return;
+				}
+				else{
+					getAdvSaveToProducts(partners);
+				}
+			});
+		}
+
+		function closeWindow(){
+			if(navigator.userAgent.indexOf("MSIE") > 0){
+				if(navigator.userAgent.indexOf("MSIE 6.0") > 0){
+					window.opener = null;
+					window.close();
+				}
+				else{
+					window.open("", "_top");
+					window.top.close();
+				}
+			}
+			else if(navigator.userAgent.indexOf("Firefox") > 0){
+				window.location.href = "about:blank";
+			}
+			else{
+				window.opener = null;
+				window.open("", "_self", "");
+				window.close();
+			}
+		}
+
+	}();	
+</script>
+</body>
+</html>

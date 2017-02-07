@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html ng-app="dataQuery">
+<head lang="en">
+    <title>appholly</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body ng-controller="mainCtrl">
+<div class="container" ng-controller="editBack">
+    <div class="row">
+        <!-- 顶部导航条-->
+        <!--欢迎用户条-->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <p class="navbar-text">欢迎您: <span ng-bind="uname"></span></p>
+                    <!--<ul class="nav navbar-nav">-->
+                        <!--<li><a ng-click="change()">更改密码</a></li>-->
+                    <!--</ul>-->
+                </div>
+            </div>
+        </nav>
+
+        <form id="searchAppend">
+            <div class="conSearchInput">
+                <label >产品名称:</label>
+                <input type="text" class="searchInput" ng-model="productName"/>
+            </div>
+            <div class="conSearchInput">
+                <label >渠道号:</label>
+                <input type="text" class="searchInput" ng-model="channelNum"/>
+            </div>
+            <div class="conSearchInput">
+                <label >合作类型:</label>
+                <input type="text" class="searchInput" ng-model="cooperateType"/>
+            </div>
+            <button class="btn btn-default" style="margin-bottom:2px;" ng-click="search()">搜索</button>
+        </form>
+        <table class="table table-bordered table-striped text-center">
+            <thead>
+            <tr>
+                <th>日期</th>
+                <th>产品名称</th>
+                <th>渠道号</th>
+                <th>合作类型</th>
+                <th>单价</th>
+                <th>安装量</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="data in products track by $index">
+                <td ng-bind="changeDate(data.effectiveDate)"></td>
+                <td ng-bind="data.productName"></td>
+                <td ng-bind="data.channelNum"></td>
+                <td ng-bind="data.cooperateType">
+                    <!--<select name="type">-->
+                        <!--<option value="0">CPA</option>-->
+                        <!--<option value="1">CPC</option>-->
+                        <!--<option value="2">CPI</option>-->
+                        <!--<option value="3">CPT</option>-->
+                    <!--</select>-->
+                </td>
+                <td ng-bind="data.price | currency : '￥'"></td>
+                <td ng-bind="data.installCount | number"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="js/angular.js"></script>
+<script src="js/angular-route.min.js"></script>
+<script src="js/angular-animate.min.js"></script>
+<script src="js/jquery-1.12.4.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/dataQuery04.js"></script>
+</html>

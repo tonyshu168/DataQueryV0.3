@@ -1,0 +1,35 @@
+<?php
+header("content-type:application/json");
+
+$user = $_REQUEST['name'];
+
+$conn = mysqli_connect("127.0.0.1","root", "apy1432016!", "dataquery", 3306);
+
+mysqli_query($conn, "set names utf8");
+
+$sql = "SELECT compay FROM users WHERE name= '$user'";
+
+$userResult = mysqli_query($conn,$sql);
+
+$userCompany = [];
+
+if(!$userResult){ echo "查询失败".$sql;}
+
+else{ $userCompany[] = mysqli_fetch_assoc($userResult);}
+
+//var_dump($userCompany);
+
+//echo $userCompany[0]['compay'];
+
+$company = $userCompany[0]['compay'];
+
+$selec = "SELECT * FROM products WHERE products.company='$company'";
+
+$result = mysqli_query($conn, $selec);
+
+$output = [];
+while($row = mysqli_fetch_assoc($result))
+{$output[] = $row;}
+
+echo json_encode($output);
+

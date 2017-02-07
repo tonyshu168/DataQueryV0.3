@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/adv/getAdvData.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/adv/price.sql" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/data/phpExcel/project/db.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/data/phpExcel/project/dbConf.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/data/phpExcel/project/export.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/data/saveInstallCountV2.php" charset="UTF-8" />
+  </component>
+</project>

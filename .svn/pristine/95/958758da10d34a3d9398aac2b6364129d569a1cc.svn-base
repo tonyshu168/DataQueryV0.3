@@ -1,0 +1,75 @@
+<!-- 顶部导航条-->
+<!--欢迎用户条-->
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <p class="navbar-text">欢迎您: <span ng-bind="uname" id="uname"></span></p>
+            <ul class="nav navbar-nav">
+                <li><a ng-click="change()">更改密码</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!--搜索与新增 -->
+<form id="searchAppend">
+    <div class="conSearchInput">
+        <label >产品名称:</label>
+        <input type="text" class="searchInput" ng-model="productName"/>
+    </div>
+    <div class="conSearchInput">
+        <label >渠道号:</label>
+        <input type="text" class="searchInput" ng-model="channelNum"/>
+    </div>
+    <div class="conSearchInput">
+        <label >公司名:</label>
+        <input type="text" class="searchInput" ng-model="company"/>
+    </div>
+
+    <div class="conSearchInput">
+        <label >合作类型:</label>
+        <input type="text" class="searchInput" ng-model="coopType"/>
+    </div>
+    <!--<br/>-->
+
+    <div class="conSearchInput">
+        <label >开始日期:</label>
+        <input type="date" class="searchInput" ng-model="effectiveDate"/>
+    </div>
+    <div class="conSearchInput">
+        <label >结束日期:</label>
+        <input type="date" class="searchInput" ng-model="endDate"/>
+    </div>
+    <button class="btn btn-default" style="margin-bottom:2px;" ng-click="search()">搜索</button>
+    <button class="btn btn-default" style="margin-bottom:2px;" ng-click="refresh()">刷新</button>
+    <button class="btn btn-default" style="margin-bottom:2px;" ng-click="jumpPage(uname)" id="addEdit">新增</button>
+</form>
+
+   <!--合作方列表 -->
+        <table class="table table-bordered table-striped text-center rt" id="table-data">
+            <thead>
+            <tr>
+                <th ng-click="reverseArr()">生效日期</th>
+                <th sort-by="productName">产品名称</th>
+                <th sort-by="channelNum">渠道号</th>
+                <th sort-by="company">公司</th>
+                <th sort-by="cooperateType">合作类型</th>
+                <!--<th sort-by="installCount">安装量</th>-->
+                <th sort-by="price">单价</th>
+                <th colspan="0">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="data in products track by $index">
+                <td ng-bind="changeDate(data.effectiveDate)"></td>
+                <td ng-bind="data.productName"></td>
+                <td ng-bind="data.channelNum"></td>
+                <td ng-bind="data.company"></td>
+                <td ng-bind="data.cooperateType"></td>
+                <!--<td ng-bind="data.installCount"></td>-->
+                <td ng-bind="data.price"></td>
+                <td><a ng-click="openEditWindow()">编辑</a></td>
+                <!--<td><a ng-click="delRow()">删除</a></td>-->
+            </tr>
+            </tbody>
+        </table>

@@ -1,0 +1,4 @@
+@$conn = mysqli_connect("127.0.0.1","root", "apy1432016!", "dataquery", 3306);
+//@$conn = mysqli_connect("127.0.0.1","root", "", "dataquery", 3306);
+
+mysqli_query($conn, "SET NAME utf8");

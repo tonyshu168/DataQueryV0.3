@@ -1,0 +1,32 @@
+<?php
+//header("Content-Type:application/json;charset=utf-8");
+
+$productName = $_RQUEST["proName"];
+
+$channelNum = $_RQUEST["channelName"];
+
+$company = $_REQUEST["company"];
+
+$compAbbreviation = $_REQUEST["compAbbr"];
+
+$cooperateType = $_REQUEST["coopType"];
+
+$price = $_REQUEST["price"];
+
+$effectiveDate = $_REQUEST["effeDate"];
+
+$endDate = $_REQUEST["endDate"];
+
+@$conn = mysqli_connect("127.0.0.1","root", "apy1432016!", "dataquery", 3306);
+//@$conn = mysqli_connect("127.0.0.1","root", "", "dataquery", 3306);
+
+mysqli_query($conn, "SET NAMES UTF8");
+
+$sql = "insert into products(productName,channelNum,company,compAbbreviation,cooperateType,price,effectiveDate,endDate) value
+('$productName', '$channelNum', '$company','$compAbbreviation', '$cooperateType', $price, $effectiveDate,$endDate);
+
+$result = mysqli_query($conn, $sql);
+
+if($result){ echo "Insert Succ!";}
+else { echo "Insert fail";}
+

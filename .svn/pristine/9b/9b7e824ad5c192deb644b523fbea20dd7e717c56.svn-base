@@ -1,0 +1,1014 @@
+angular.module("dataQuery",["ng"]).controller("mainCtrl",["$scope","rootScope","$http","$interval","$timeout",function($scope,$rootScope,$http,$interval,$timeout){
+    $scope.change = function(){ //显示更改密码框
+        $("#changePwd").show(500);
+    }
+
+    $scope.resetPwd = function(){  //重置用户密码
+        $("#resetPwd").show(500)
+    }
+
+    $scope.$watch("uname",function(){
+       $rootScope.uname =  $scope.uname;
+    });
+
+    //用于关闭修改密码框
+    $scope.close = function(){
+        $("#changePwd").hide(500);
+    }
+
+    //用于关闭弹出框
+    $scope.closeAlert = function(){
+        $("#selectAlert").fadeOut(500);
+    }
+
+    //重新加载数据
+    $scope.refresh = function(){
+        if($scope.uname !="apy"){
+            $http.get("data/getProducts.php?name="+$rootScope.uname).success(function(data){
+                $scope.arrSort(data,"effectiveDate");
+                $scope.products = data;
+            });
+        }
+        else{
+            $http.get("data/getAllProducts.php").success(function(data){
+                $scope.arrSort(data,"effectiveDate");
+                $scope.products = data;
+            });
+        }
+        $scope.clearSearchHistroy();//清除之前的历史记录
+    }
+
+    console.log($scope.effectiveDate);
+    console.log($scope.endDate);
+
+    //用于产品搜索
+    $scope.search = function() {
+        //仅本公司才可相看所有的信息
+        if($rootScope.uname == "apy"){       /*********/
+            if ($scope.productName || $scope.channelNum || $scope.company || $scope.coopType ||
+                $scope.effectiveDate || $scope.endDate) {
+                undefineChangeNull();
+                var params = "productName=" + $scope.productName + "&channelNum=" + $scope.channelNum +
+                    "&company=" + $scope.company + "&cooperateType=" + $scope.coopType + "&effectiveDate=" + ($scope.effectiveDate ? $scope.effectiveDate.getTime() : '') + "&endDate=" + ($scope.endDate ? $scope.endDate.getTime() : '');
+                $http.get("data/newSelectDataV2.php?" + params).success(function(data) {
+                    $scope.arrSort(data,"effectiveDate");
+                    $scope.products = data;
+                    if (!data.length) {
+                        console.log("没查找到符合你要求的数据!!");
+                        $("#selectAlert").fadeIn(500);
+                    }
+                });
+            }
+            console.log($scope.effectiveDate);
+            console.log($scope.endDate);
+        }
+        else{  //非本公司用户只可查看自己所在公司的信息 /////////////////////
+            if($scope.productName || $scope.channelNum || $scope.company || $scope.cooperateType ||
+                $scope.effectiveDate || $scope.endDate){
+                if($scope.effectiveDate) {var effeDate = $scope.effectiveDate.getTime();}
+                else {var effeDate = "";}
+                if($scope.endDate){var endDate = $scope.endDate.getTime();}
+                else {var endDate = "";}
+                undefineChangeNull();
+                var params =  $scope.productName + "&channelNum=" + $scope.channelNum + "&company=" + $scope.company +
+                    "&cooperateType=" + $scope.coopType + "&uname=" + $scope.uname + "&effectiveDate=" + effeDate +
+                    "&endDate=" +  endDate;
+                $http.get("data/newSelectData_self.php?productName=" + params).success(function(data){
+                    $scope.arrSort(data,"effectiveDate");
+                    $scope.products= data;
+                    if(!data.length){
+                        console.log("没查找到符合你要求的数据!!");
+                        $("#selectAlert").fadeIn(500);
+                    }
+                });
+            }
+        }                               /////////////////////////////
+    }
+
+    function undefineChangeNull(){
+        if(!$scope.productName){ $scope.productName = "";}
+        if(!$scope.channelNum){ $scope.channelNum = "";}
+        if(!$scope.company){ $scope.company = "";}
+        if(!$scope.coopType){ $scope.coopType = "";}
+        // if(!$scope.effectiveDate){ $scope.effectiveDate = new Date();}
+        // if(!$scope.endDate){ $scope.endDate = new Date();}
+    }
+
+    //删除当前行
+    $scope.addRows = function(){
+        if($rootScope.uname == "apy"){   /*** 仅本公司用户才有权增加新用户 **/
+        $("#editContent").show(500);
+        }
+    }
+    //跳转到后台编辑页面
+    $scope.jumpPage = function(uname) {
+        window.open("editBack02.html?"+uname);
+    }
+
+    $scope.index = 0;
+    //打开后台编辑窗口
+    $scope.openEditWindow = function(){
+        $scope.index = this.$index;
+        $("#editContent").show(500);
+    }
+
+    $scope.inputProductInfo = function(){
+        $("#inputProductInfo").show(500);
+    }
+
+    $scope.delRow = function(){
+        console.log(this.$index);
+        if(confirm){
+        $scope.products.splice(this.$index,1);
+        }
+    }
+
+    //反转排序
+    $scope.reverseArr = function(){
+        $scope.products.reverse();
+    }
+
+    //日期格式转换(毫秒数组=>日期数组)
+    function millionSecondChangeDate(data){
+        $.each(data,function(i){
+            data[i].effectiveDate=new Date(data[i].effectiveDate);
+        });
+    }
+
+    //将毫秒转换成日期
+    $scope.changeDate = function(millonS){
+        var newDate = new Date(millonS*1);
+        return newDate.toLocaleDateString().replace(/\//g,"-");
+    }
+
+        $scope.arrSort = function(data, vari){
+        for(var i = 1; i <data.length; i++){
+            for(var j = 0,temp={}; j < data.length - i; j++ ){
+                if(data[j][vari]*1 < data[j+1][vari]*1){
+                    temp = data[j];
+                    data[j] = data[j+1];
+                    data[j+1] = temp;
+                }
+            }
+        }
+    }
+
+    var jsonCount = {}
+    $('#table-data').on('click', '[sort-by]', function(e) {
+        var sSortBy = $(this).attr('sort-by')
+        // $scope.products
+        jsonCount[sSortBy] = jsonCount[sSortBy] || 0
+        jsonCount[sSortBy]++
+        var isDesc = jsonCount[sSortBy] % 2
+        $scope.products.sort(function(a0, a1) {
+            //installCount price
+            if (sSortBy == 'installCount' || sSortBy == 'price') {
+                // 按照数字排序
+                return isDesc ? a0[sSortBy] - a1[sSortBy] : a1[sSortBy] - a0[sSortBy]
+            } else {
+                // 自然序
+                return isDesc ? a0[sSortBy].localeCompare(a1[sSortBy]) : a1[sSortBy].localeCompare(a0[sSortBy])
+            }
+        })
+        $scope.$apply()
+    })
+
+    // $('#login-container').hide()
+    $('#searchAppend').on('input', function() {
+        $scope.products.forEach(function(item, idx) {
+            item.isHide = false
+        })
+        $(this).find('[filter]').each(function() {
+            var sModel = $(this).attr('filter')
+            var val = this.value
+            $scope.products.forEach(function(item, idx) {
+                item.isHide = item.isHide || (val && (item.isHide = (item[sModel] || '').toLowerCase() != (val || '').toLowerCase()))
+            })
+        })
+        $scope.$apply()
+    })
+
+    //两小时自动刷新页面
+    $interval(function(){
+        if($scope.uname !="apy"){
+            console.log($scope.uname);
+            $http.get("data/getProducts.php?name="+$rootScope.uname).success(function(data){
+                $scope.arrSort(data,"effectiveDate");
+                $scope.products = data;
+                $rootScope.products = $scope.products;
+            });
+            $("#addEdit").css("display","none");
+        }
+        else{
+            $http.get("data/getAllProducts.php").success(function(data){
+                $scope.arrSort(data,"effectiveDate");
+                $scope.products = data;
+                $rootScope.products = $scope.products;
+            });
+        }
+        $scope.$apply();
+    },1000*3600*2)
+
+    /*$scope.InsertDataReplaceOldData = function(newData){
+        $rootScope.products = newData;
+        console.log($scope.products);
+        //$scope.$apply();
+    }*/
+
+
+    /******** 编辑与保存数据 *************/
+    $scope.editable = true; //安装量是否可编辑
+    $scope.autoComplete = "off";  //获取焦点
+    var oldProducts = [];    //保存现有的数据
+
+    //保存用户编辑的数据
+    //loadData();
+
+    //点击变为可编辑状态
+    $scope.changeDis = function(){
+        $scope.editable=false;
+        $scope.autocomplete = "on";
+    }
+
+    //保存修改后的数据
+    $scope.saveEditData = function($index){
+        if($scope.editable == false){
+            var reg =/\d/g;
+            if(reg.test($scope.products[$index].installCount)){
+                $http.get("data/saveInstallCount.php?installCount="+$scope.products[$index].installCount+"&did="+
+                    $scope.products[$index].did).success(function(data){
+                    var currentTD = $("#table-data tbody tr").eq($index);
+                    if(data == "Update Succ!"){
+                        console.log("修改成功");
+                        //保存之前的背景颜色
+                        var prevBackColor = currentTD.css("background");
+                        currentTD.css("background","#81E3D6");
+                        //5秒之后恢复之前的颜色
+                        $timeout(function(){
+                            currentTD.css("background",prevBackColor);
+                        },5000);
+                    }
+                    else{
+                        var previousColor = currentTD.css("color");
+                        currentTD.css("color","#f00");
+                        //5秒之后恢复之前的颜色
+                        $timeout(function(){
+                            currentTD.css("color",previousColor); //恢复之前的颜色
+                            $scope.abandon($index);                //恢复之前的数据
+                        },5000);
+                    }
+                });
+            }
+            else{
+                console.log("输入的必须为数字!!");
+            }
+        }
+    }
+
+    //不保存修改后的数据
+    $scope.abandon = function($index){
+        if(!$scope.editable){
+            console.log($index)
+            console.log($scope.products[$index].did);
+            console.log($scope.products,oldProducts);
+            console.log($scope.products.length,oldProducts.length);
+            var did = $scope.products[$index].did; //找到点击对应的did;
+            var index = returnIndex(did,oldProducts);    //根据did找到之前的index
+            console.log(index);
+            console.log(oldProducts[index].installCount);
+            //将之前的数据读回去
+            $scope.products[$index].installCount = oldProducts[index].installCount;
+            $scope.editable = true;
+        }
+    }
+
+    //根成did查找对应的index值
+    function returnIndex(did,data){
+        for(var i = 0; i <data.length; i++){
+            console.log(data[i].did);
+            if(data[i].did == did){ return i;}
+        }
+    }
+
+    //清除历史搜索记录
+    $scope.clearSearchHistroy=function(){
+        console.log("clear");
+        $scope.productName="";
+        $scope.channelNum = "";
+        $scope.cooperateType = "";
+        $scope.company = "";
+        $scope.effectiveDate = "";
+        $scope.endDate = "";
+    }
+
+
+}]).controller("login",["$scope","$http","$rootScope",function($scope,$http,$rootScope){
+    $scope.show = true;
+    if(localStorage.uname){ checkAuto(); }
+    $scope.verification = function(){
+        //console.log($scope.uname,$scope.pwd,$scope.select);
+        $http.get("data/verificationUserPwd.php?uname="+$scope.uname+"&pwd="+$scope.pwd).success(function(data){
+            if(data != "login succ!"){
+                $scope.show = false;
+            }
+            else{
+                if($scope.select == true){
+                    saveUserPwd($scope.uname, $scope.pwd);
+                }
+                $("#login-container").hide(500);
+                $rootScope.uname = $scope.uname;
+
+                if($scope.uname !="apy"){
+                    console.log($scope.uname);
+                    $("#self_company").hide();
+                    $("#other_user").show();
+                    $http.get("data/getProducts.php?name="+$rootScope.uname).success(function(data){
+                        $scope.arrSort(data,"effectiveDate");
+                        $scope.products = data;
+                        $rootScope.products = $scope.products;
+                    });
+                    $("#addEdit").css("display","none");
+                }
+                else{
+                    $http.get("data/getAllProducts.php").success(function(data){
+                        console.log("getData");
+                        $scope.arrSort(data,"effectiveDate");
+                        $scope.products = data;
+                        $rootScope.products = $scope.products;
+                    });
+                }
+            }
+        });
+    }
+
+    //本地储存uname,pwd,loginTime
+    function saveUserPwd(uname,pwd){
+        window.localStorage.uname=uname;
+        window.localStorage.pwd = pwd;
+        window.localStorage.loginTime = new Date().getTime();
+    }
+    //用于检查自动登录
+    function checkAuto(){
+        var  uname = localStorage.uname;
+        var pwd = localStorage.pwd;
+        var loginTime = localStorage.loginTime;
+
+        var now = new Date().getTime();
+        if((now - loginTime) > 1000 * 3600 *24*7)
+        {
+            localStorage.removeItem("uname");
+            localStorage.removeItem("pwd");
+        }
+        else
+        {
+            $scope.uname=uname;
+            $scope.pwd = pwd;
+        }
+    }
+
+}]).controller("changePwd",["$scope","$rootScope","$http",function($scope,$rootScope,$http){
+    $scope.pwdAlert = true;  //用于控制新密码的提示
+    $scope.oldPwdAlert="hidden"; //用于控制旧密码的输入正确于否
+    var oldPwd = true;  //判断旧的密码输入是否正确
+    $scope.$watch("uname",function(){
+        console.log($scope.uname);
+    });
+    //用于检查当前登录时的密码是否正确
+        $scope.verificationOldPwd = function () {
+            if($scope.pwd){
+                $http.get("data/verificationUserPwd.php?uname=" + $scope.uname + "&pwd=" + $scope.pwd).success(function (data) {
+                    console.log(data);
+                    if (data != "login succ!") {
+                        $scope.oldPwdAlert = "visible";
+                        oldPwd = false;
+                    }
+                    else{
+                        $scope.oldPwdAlert="hidden";
+                    }
+                });
+            }
+    }
+    //用于检查两次新输入的密码是否一致
+    $scope.checkIpntPwd = function(){
+        if($scope.firstPwd != $scope.secondPwd){   //第一次与第二次输入的密码一致时
+            $scope.pwdAlert = false;
+        }
+        else if($scope.firstPwd.length >= 6 && oldPwd){ //新密码长必须>=6 && 原始密码输入正确时
+            $http.get("data/changePwd.php?uname="+$scope.uname + "&pwd=" + $scope.secondPwd).success(function(data){
+                console.log(data);
+                //$scope.isShow=false;//关闭修改密码框
+            });
+            $("#changePwd").hide(500);
+            $scope.clearAllPwd();
+        }
+    }
+
+    //清除所有密码
+    $scope.clearAllPwd = function(){
+        $scope.pwd = "";
+        $scope.firstPwd = "";
+        $scope.secondPwd = "";
+    }
+}]).controller("editContent",["$scope","$rootScope","$rootScope",function($scope, $rootScope, $http){
+    $scope.isShow = "hidden";
+
+    $scope.firstInsertIndex = [];  //用于保存新增加数据的下标
+    $scope.newAddData = [];
+
+    $scope.save = function(){
+        var prodInfo = {};      //用于保存新增加的一行数据
+        console.log($scope.cooperateType);
+        cooperateChange();
+        if($scope.productName && $scope.channelNum && $scope.company && $scope.compAbbreviation && $scope.cooperateType
+            && $scope.price && $scope.effectiveDate && $scope.endDate){   //用于检查用户否漏输入
+            if(($scope.effectiveDate.getTime()+1000*3600*24*365) <= $scope.endDate.getTime() && /\d/g.test(parseInt($scope.price))) { //用于检查用户输入格式是否正确
+                $http.get("data/insertData02.php?proName=" + $scope.productName + "&channelName=" + $scope.channelNum + "&company="
+                    + $scope.company + "&compabbr=" + $scope.compAbbreviation + "&coopType=" + $scope.cooperateType + "&price=" + $scope.price +
+                    "&effeDate=" + $scope.effectiveDate.getTime() + "&endDate=" + $scope.endDate.getTime()).success(function (data) {
+                    console.log(data);
+                    if (data.msg == "Insert Succ!") {
+                        $scope.isShow = "visible";
+                        $scope.insertMsg = "输入成功!!!";
+                        $scope.firstInsertIndex.push(data.did);
+
+                        $http.get("data/returnNewAdd.php?did="+data.did).success(function(data){
+                            console.log(data);
+                            $scope.newAddData.push(data);
+                            $scope.products = $scope.newAddData;
+                        });
+                    }
+                    else {
+                        $scope.isShow = "visible";
+                        $scope.insertMsg = "输入有误!!!";
+                    }
+                })
+            }
+            else{
+                $scope.isShow = "visible";
+                $scope.insertMsg = "输入有误或格式不对!!";
+            }
+        }
+    }
+    $scope.close=function(){
+        $("#editContent").hide(500);
+    }
+    //转换对应的文字
+    function cooperateChange(){
+        switch($scope.cooperateType){
+            case "0":$scope.cooperateType = "CPA";break;
+            case "1":$scope.cooperateType = "CPC";break;
+            case "2":$scope.cooperateType = "CPI";break;
+            case "3":$scope.cooperateType = "CPT";break;
+        }
+    }
+    //endDate默认值的设置
+    function endDateDefau(){
+        var date = new Date()
+        date.setFullYear(date.getFullYear()+1);
+        $scope.endDate = date
+    }
+    endDateDefau();
+
+}]).controller("editBack",["$scope","$rootScope","$http",function($scope,$rootScope,$http){  //新增用户输入控制器
+    var products = {};  //用于保存用户输入的数据，最后再存储到localStorage.products中
+    products.productName=[];
+    products.channelNum = [];
+    products.company = [];
+    products.compAbbreviation = [];
+
+    var $s = $scope;
+    $s.isVisi = "hidden";
+    $s.dateShow = "hidden";
+    $s.close = function(){
+        $("#inputProductInfo").hide(500);
+        //console.log($scope.index);
+        clearOldInputData();
+    }
+    $s.verifiedDate = function(){ //验证生效时期
+        var date = new Date($s.effectiveDate);
+        if($s.effectiveDate){
+            $s.endDate = $s.effectiveDate;
+            $s.endDate.setFullYear($s.effectiveDate.getFullYear()+1);
+        }
+        //$s.effectiveDate = date.toLocaleDateString().replace(/\//g,"-");
+        $s.isVisi='hidden';
+    }
+
+    $s.checkDate = function(){
+        var date = new Date($s.effectiveDate);
+        var endDate = new Date($s.endDate);
+        $s.effectiveDate && ($s.effectiveDate = date.getTime()); //year-moth-date转换成毫秒数
+        $s.endDate && ($s.endDate = endDate.getTime());
+        $s.isVisi = "hidden";
+        if(endDate.getTime() < (date.getTime()+1000*3600*24*365)){
+            console.log(endDate.getTime());
+            $s.dateShow = "visible";
+            $s.dateMsg = "结束日期必须大于生效日期+1年";
+        }
+        else{
+            $s.dateShow = "hidden";
+            $s.dateMsg = "";
+        }
+        $s.effectiveDate = date.toLocaleDateString().replace(/\//g,"-");
+        $s.endDate = endDate.toLocaleDateString().replace(/\//g,"-");
+    }
+
+    //检验数据格式(price & install)
+    var priceMsg = false;
+    $s.veriPrice = "hidden";
+    $s.verifiedPrice = function(){
+        if($s.price){
+            priceMsg = /^^(\d)*(.)?(\d)*$/.test($s.price);
+            if(!priceMsg){$s.veriPrice = "visible"; $s.priceAlert = "单价必须为数字!!";}
+            else{ $s.veriPrice="hidden"; $s.priceAlert = "";}
+        }
+        console.log(priceMsg);
+    }
+
+    var isntallMsg = false;
+    $s.verifiedInstall = function(){
+        if($s.installCount){
+            installMsg = /^(\d)*$/.test($s.installCount);
+            if(!installMsg){ $s.isVisi = "visible"; $s.isSucc = "安装量必须为数字或整数";}
+            else{$s.isVisi = "hidden";$s.isSucc = "";}
+        }
+    }
+
+
+    $scope.firstInsertIndex = [];  //用于保存新增加数据的下标
+    $scope.newAddData = [];
+
+    var oldProducts = [];    //保存现有的数据
+
+    $s.save = function(){
+        var prodInfo = {};      //用于保存新增加的一行数据
+        cooperateChange();
+        if($scope.productName && $scope.channelNum && $scope.company && $scope.compAbbreviation && $scope.cooperateType
+            && priceMsg && installMsg && $s.effectiveDate){   //用于检查用户否漏输入  //&& $s.endDate
+            //if(($scope.effectiveDate.getTime()+1000*3600*24*365) <= $scope.endDate.getTime()) { //用于检查用户输入格式是否正确
+                $http.get("data/insertDataAll.php?proName=" + $scope.productName + "&channelName=" + $scope.channelNum + "&company="
+                    + $scope.company + "&compabbr=" + $scope.compAbbreviation + "&coopType=" + $scope.cooperateType + "&price=" + $scope.price +
+                    "&installCount="+$scope.installCount+"&effeDate=" + $scope.effectiveDate.getTime() + "&endDate=" + $scope.endDate.getTime())
+                    .success(function (data) {
+                    console.log(data);
+                    if (data.msg == "Insert Succ!") {
+                        $s.isVisi = "visible";
+                        $scope.isSucc = "输入成功!!!";
+                        $scope.firstInsertIndex.push(data.did);
+
+                        $http.get("data/returnNewAdd.php?did="+data.did).success(function(data){
+                            console.log(data);
+                            $scope.newAddData.push(data);
+                            $scope.arrSort($scope.newAddData,"effectiveDate");
+                            $scope.products = $scope.newAddData;
+                            oldProducts.concat($scope.newAddData);
+                            oldProducts.push(data);
+                        });
+
+                        $scope.saveInputProductInfo(); //将用户保存的数据存储到localStorage中
+                    }
+                    else {
+                        $scope.isVisi = "visible";
+                        $scope.isSucc = "输入有误!!!";
+                    }
+                })
+        }
+        else{
+            $scope.isVisi = "visible";
+            $scope.isSucc = "漏输入或输入有误或格式不对!!";
+        }
+        $scope.clearSearchHistroy();
+    }
+
+    function clearOldInputData(){
+        $scope.productName='';
+        $scope.channelNum = '';
+        $scope.company = '';
+        $scope.compAbbreviation = '';
+        $scope.price = '';
+        $scope.installCount = '';
+    }
+
+    //localStorage.products保存用户输入的数据
+    $scope.saveInputProductInfo = function(){
+        var localSave = localStorage.products ? JSON.parse(localStorage.products):"";
+        if(!localSave.productName || localSave.productName.length<8){
+            products.productName.push($scope.productName);
+        }
+        if(!localSave.channelNum || localSave.channelNum.length<8){
+            products.channelNum.push($scope.channelNum);
+        }
+        if(!localSave.company || localSave.company.length<8){
+            products.company.push($scope.company);
+        }
+        if(!localSave.compAbbreviation || localSave.compAbbreviation.length<8){
+            products.compAbbreviation.push($scope.compAbbreviation);
+        }
+        localStorage.products= JSON.stringify(products); //保存用户数据
+    }
+
+    //自动配合localStorage中的数据
+    $scope.autoAppendKW = function(){
+        if(localStorage.products) {
+            var html = "";
+            $scope.$watch("productName",function(){
+                console.log($scope.productName);
+
+            var proInfo = JSON.parse(localStorage.products);
+            console.log(proInfo);
+            console.log(proInfo['productName']);
+            var data = proInfo['productName'];
+            for (var key in data) {
+                if (data[key].indexOf($scope.productName) >= 0) {
+                    console.log(data[key]);
+                    html += "<li>" + data[key] + "</li>";
+                }
+            }
+            var input = $("input[ng-model='productName']");
+            input.next().html(html);
+            input.next().show();
+            //console.log(input.next().children());
+                input.next().children().on("click", function () {
+                    $scope.productName = this.innerHTML;
+                    this.parentElement.innerHTML = "";
+                    $(this).parent().hide();
+                    $scope.$apply();
+                });
+            });
+        }
+    }
+
+    document.querySelector("#inputProductInfo").addEventListener("click",function(){
+        $("input[ng-model='productName']").next().hide();
+    });
+
+
+
+
+    //生效日期的默认值
+    function effectiveDate(){
+        $s.effectiveDate = new Date();
+    }
+
+    effectiveDate();
+
+    //endDate默认值的设置
+    function endDateDefau(){
+        var date = new Date()
+        date.setFullYear(date.getFullYear()+1);
+        $s.endDate = date
+    }
+    endDateDefau();
+
+    //当前时间再加上一年
+    function nowAddOneYear(str){
+        var now = new Date(str);
+        var finalDate = now.setFullYear(now.getFullYear()+1);//返回的是一个毫秒数
+        return finalDate;
+    }
+
+    //转换对应的文字
+    function cooperateChange(){
+        switch($scope.cooperateType){
+            case "0":$scope.cooperateType = "CPA";break;
+            case "1":$scope.cooperateType = "CPC";break;
+            case "2":$scope.cooperateType = "CPI";break;
+            case "3":$scope.cooperateType = "CPT";break;
+        }
+    }
+
+}]).controller("editData",["$scope","$rootScope","$http","$timeout",function($scope,$rootScope,$http,$timeout){
+    var oldProducts = [];    //保存现有的数据
+    var path = location.href;
+    //防止查找不到"?"时,index从0开始
+    path.lastIndexOf("?") >=0 && ($scope.uname = path.substring(location.href.lastIndexOf("?")+1));
+    $scope.editable = true; //安装量是否可编辑
+    $scope.autoComplete = "off";  //获取焦点
+    //根椐用户类型对应加载数据
+    if($scope.uname !="apy"){
+        console.log($scope.uname);
+        $http.get("data/getProducts.php?name="+$rootScope.uname).success(function(data){
+            $scope.arrSort(data,"effectiveDate");
+            $scope.products = data;
+            $rootScope.products = $scope.products;
+        });
+    }
+    else{
+        $http.get("data/getAllProducts.php").success(function(data){
+            $scope.arrSort(data,"effectiveDate");
+            $scope.products = data;
+            $rootScope.products = $scope.products;
+            oldProducts = $scope.products;
+        });
+
+    }
+
+    //保存用户编辑的数据
+    loadData();
+
+    //点击变为可编辑状态
+    $scope.changeDis = function(){
+        $scope.editable=false;
+        $scope.autocomplete = "on";
+    }
+
+    //刷新页面，重新加载数据
+    $scope.refresh = function(){
+        $scope.clearSearchHistroy();  //清除之前的搜索记录
+        loadData();
+    }
+
+    function loadData(){
+        if($scope.uname !="apy"){
+            console.log($scope.uname);
+            $http.get("data/getProducts.php?name="+$rootScope.uname).success(function(data){
+                $rootScope.arrSort(data,"effectiveDate");
+                $scope.products = data;
+                $rootScope.products = $scope.products;
+            });
+        }
+        else{
+            $http.get("data/getAllProducts.php").success(function(data){
+                $scope.arrSort(data,"effectiveDate");
+                $scope.products = data;
+                $rootScope.products = $scope.products;
+            });
+        }
+    }
+
+    //搜索
+    var jsonCount = {}
+    $('#table-data').on('click', '[sort-by]', function(e) {
+        var sSortBy = $(this).attr('sort-by')
+        // $scope.products
+        jsonCount[sSortBy] = jsonCount[sSortBy] || 0
+        jsonCount[sSortBy]++
+        var isDesc = jsonCount[sSortBy] % 2
+        $scope.products.sort(function(a0, a1) {
+            //installCount price
+            if (sSortBy == 'installCount' || sSortBy == 'price') {
+                // 按照数字排序
+                return isDesc ? a0[sSortBy] - a1[sSortBy] : a1[sSortBy] - a0[sSortBy]
+            } else {
+                // 自然序
+                return isDesc ? a0[sSortBy].localeCompare(a1[sSortBy]) : a1[sSortBy].localeCompare(a0[sSortBy])
+            }
+        })
+        $scope.$apply()
+    })
+
+
+    /******** 查询 ************/
+    $scope.searchData = function(){
+        if ($scope.productName || $scope.channelNum || $scope.company || $scope.cooperateType) {
+            undefineChangeNull();
+            console.log($scope.productName);
+            var params = "productName=" + $scope.productName + "&channelNum=" + $scope.channelNum +
+                "&company=" + $scope.company + "&cooperateType=" + $scope.cooperateType;
+            $http.get("data/newSelectData.php?" + params).success(function (data) {
+                console.log(data);
+                $scope.products = data;
+                if(!data.length){
+                    console.log("没查找到符合你要求的数据!!");
+                    $("#selectAlert").fadeIn(500);
+                }
+            });
+        }
+    }
+
+    function undefineChangeNull(){
+        if(!$scope.productName){ $scope.productName = "";}
+        if(!$scope.channelNum){ $scope.channelNum = "";}
+        if(!$scope.company){ $scope.company = "";}
+        if(!$scope.cooperateType){ $scope.cooperateType = "";}
+    }
+
+    //保存修改后的数据
+    $scope.saveEditData = function($index){
+        if($scope.editable == false && $scope.cooperateVerified && $scope.priceVerified){
+            var params = $scope.products[$index].productName+"&channelNum="+$scope.products[$index].channelNum+
+                "&cooperateType="+$scope.products[$index].cooperateType.toUpperCase()+"&company="+$scope.products[$index].company
+                +"&price="+$scope.products[$index].price+"&did="+ $scope.products[$index].did;
+        $http.get("data/saveEdit_Table.php?productName="+params).success(function(data){
+                var currentTD = $("#table-data tbody tr").eq($index);
+                if(data == "Update Succ!"){
+                    console.log("修改成功");
+                    //保存之前的背景颜色
+                    var prevBackColor = currentTD.css("background");
+                    currentTD.css("background","#81E3D6");
+                    //5秒之后恢复之前的颜色
+                    $timeout(function(){
+                        currentTD.css("background",prevBackColor);
+                    },5000);
+                }
+                else{
+                    var previousColor = currentTD.css("color");
+                    currentTD.css("color","#f00");
+                    //5秒之后恢复之前的颜色
+                    $timeout(function(){
+                        currentTD.css("color",previousColor); //恢复之前的颜色
+                        $scope.abandon($index);                //恢复之前的数据
+                    },5000);
+                }
+        });
+        }
+    }
+
+    //用于数据的检验
+    $scope.verifiedCooperate = function(index){
+        var originArr = ['CPA',"CPC","CPI","CPT"];
+        if(originArr.indexOf($scope.products[index].cooperateType.toUpperCase()) < 0){
+            $scope.verifiedDataMsg = "合作类型只能从:CPA,CPC,CPI,CPT中选择一种.";
+            $("#verifiedData").show(500);
+        }
+        else{$scope.cooperateVerified = true;}
+    }
+
+    $scope.verifiedPrice = function(index){
+        if(!/\d/g.test($scope.products[index].price)){
+            $scope.verifiedDataMsg = "输入的数据类型不对.";
+            $("#verifiedData").show(500);
+        }
+        else{$scope.priceVerified = true;}
+    }
+
+    //关闭数据类型不对的警告框
+    $scope.closeVerifiedData = function(){
+        $("#verifiedData").hide(500);
+    }
+
+    //不保存修改后的数据
+    $scope.abandon = function($index){
+        if(!$scope.editable){
+            console.log($index)
+            console.log($scope.products[$index].did);
+            console.log($scope.products,oldProducts);
+            console.log($scope.products.length,oldProducts.length);
+            var did = $scope.products[$index].did; //找到点击对应的did;
+            var index = returnIndex(did,oldProducts);    //根据did找到之前的index
+            console.log(index);
+            console.log(oldProducts[index].installCount);
+            //将之前的数据读回去
+            $scope.products[$index].installCount = oldProducts[index].installCount;
+            $scope.editable = true;
+        }
+    }
+
+    //根成did查找对应的index值
+    function returnIndex(did,data){
+        for(var i = 0; i <data.length; i++){
+            console.log(data[i].did);
+            if(data[i].did == did){ return i;}
+        }
+    }
+
+
+    //新增录入数据
+    $scope.isShow = "hidden";
+
+    $scope.firstInsertIndex = [];  //用于保存新增加数据的下标
+    $scope.newAddData = [];
+
+    $scope.save = function(){
+        var prodInfo = {};      //用于保存新增加的一行数据
+        console.log($scope.cooperateType);
+        cooperateChange();
+        if($scope.productName && $scope.channelNum && $scope.company && $scope.compAbbreviation && $scope.cooperateType
+            && $scope.price && $scope.effectiveDate && $scope.endDate){   //用于检查用户否漏输入
+            if(($scope.effectiveDate.getTime()+1000*3600*24*365) <= $scope.endDate.getTime() && /\d/g.test(parseInt($scope.price))) { //用于检查用户输入格式是否正确
+                $http.get("data/insertData02.php?proName=" + $scope.productName + "&channelName=" + $scope.channelNum + "&company="
+                    + $scope.company + "&compabbr=" + $scope.compAbbreviation + "&coopType=" + $scope.cooperateType + "&price=" + $scope.price +
+                    "&effeDate=" + $scope.effectiveDate.getTime() + "&endDate=" + $scope.endDate.getTime()).success(function (data) {
+                    console.log(data);
+                    if (data.msg == "Insert Succ!") {
+                        $scope.isShow = "visible";
+                        $scope.insertMsg = "输入成功!!!";
+                        $scope.firstInsertIndex.push(data.did);
+
+                        $http.get("data/returnNewAdd.php?did="+data.did).success(function(data){
+                            console.log(data);
+                            $scope.newAddData.push(data);
+                            $scope.arrSort($scope.newAddData,"effectiveDate");
+                            $scope.products = $scope.newAddData;
+                            oldProducts.concat($scope.newAddData);
+                            oldProducts.push(data);
+                            console.log(oldProducts,oldProducts.length);
+                        });
+                    }
+                    else {
+                        $scope.isShow = "visible";
+                        $scope.insertMsg = "输入有误!!!";
+                    }
+                })
+            }
+            else{
+                $scope.isShow = "visible";
+                $scope.insertMsg = "输入有误或格式不对!!";
+            }
+        }
+        else{
+            $scope.isShow = "visible";
+            $scope.insertMsg = "漏输入或输入有误或格式不对!!";
+        }
+        $scope.clearSearchHistroy();
+    }
+    $scope.close=function(){
+        $("#editContent").hide(500);
+        $scope.clearSearchHistroy();
+    }
+    //转换对应的文字
+    function cooperateChange(){
+        switch($scope.cooperateType){
+            case "0":$scope.cooperateType = "CPA";break;
+            case "1":$scope.cooperateType = "CPC";break;
+            case "2":$scope.cooperateType = "CPI";break;
+            case "3":$scope.cooperateType = "CPT";break;
+        }
+    }
+
+    //生效日期的默认值
+    function effectiveDate(){
+        $scope.effectiveDate = new Date();
+    }
+
+    effectiveDate();
+
+    //endDate默认值的设置
+    function endDateDefau(){
+        var date = new Date()
+        date.setFullYear(date.getFullYear()+1);
+        $scope.endDate = date
+    }
+    endDateDefau();
+
+    //清除历史搜索记录
+    $scope.clearSearchHistroy=function(){
+        $scope.productName="";
+        $scope.channelNum = "";
+        $scope.cooperateType = "";
+        $scope.company = "";
+        $scope.compAbbreviation = "";
+        $scope.price="";
+        //$scope.effectiveDate = "";
+        //$scope.endDate = "";
+    }
+
+
+}]).controller("resetPwd",["$scope","$http",function($scope,$http){   //重置用户密码
+    $scope.pwdAlert = true;  //用于控制新密码的提示
+    $scope.isUser = "hidden";
+    $scope.resetSucc = "hidden";
+    $scope.$watch("uname",function(){
+        console.log($scope.uname);
+    });
+
+    $scope.close = function(){
+        $("#resetPwd").hide(500);
+    }
+
+    //检查用户是否存在
+    $scope.checkIsUser = function(){
+        var reg = /^[a-zA-Z0-9]+?/;
+        console.log(reg.test($scope.uname));
+        if(reg.test($scope.uname)){
+            console.log($scope.uname);
+            $http.get("data/checkIsUser.php?uname="+$scope.uname).success(function(data){
+                console.log(data);
+                if(data == "user is being"){ $scope.isUser="hidden"; $scope.isUserMsg = "";}
+                else{$scope.isUser="visible"; $scope.isUserMsg = "该用户不存在!!请重新输入";}
+            });
+        } else{
+            $scope.isUser = "visible";
+            $scope.isUserMsg ="用户名不能包含汉字";
+        }
+    }
+
+    //用于检查两次新输入的密码是否一致
+    $scope.checkIpntPwd = function(){
+        console.log($scope.isUserMsg);
+        if($scope.firstPwd != $scope.secondPwd){   //第一次与第二次输入的密码一致时
+            $scope.pwdAlert = false;
+        }
+        else if($scope.firstPwd.length >= 6 && $scope.isUserMsg == ""){ //新密码长必须>=6
+            $http.get("data/changePwd.php?uname="+$scope.uname + "&pwd=" + $scope.secondPwd).success(function(data){
+                console.log(data);
+                //$scope.isShow=false;//关闭修改密码框
+            });
+            //$("#resetPwd").hide(500);
+            $scope.resetSucc = "visible";
+            $scope.resetSuccess = "密码更改成功!!!"
+            $scope.clearAllPwd();
+        }
+    }
+
+    //清除密码更改成功的字本
+    $scope.changeResetmsg = function(){
+        $scope.resetSuccess = "";
+    }
+
+    //清除所有密码
+    $scope.clearAllPwd = function(){
+        $scope.firstPwd = "";
+        $scope.secondPwd = "";
+    }
+}]);

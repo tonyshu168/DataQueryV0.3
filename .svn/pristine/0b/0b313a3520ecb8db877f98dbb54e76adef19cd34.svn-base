@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html ng-app="dataQuery">
+<head lang="en">
+    <title>appholly</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/index.css"/>
+</head>
+<body ng-controller="mainCtrl">
+<!--合作方录入及查看权限-->
+<div class="container-fluid">
+    <!-- 合作方列表-->
+    <div class="row" id="self_company">
+        <!-- 顶部导航条-->
+        <!--欢迎用户条-->
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <p class="navbar-text">欢迎您: <span ng-bind="uname" id="uname"></span></p>
+                    <ul class="nav navbar-nav">
+                        <li><a ng-click="change()">更改密码</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主体内容-->
+        <div id="main">
+            <!-- 左边导航部分-->
+            <ul class="lf pannelLeft">
+                <li><a href="" ng-click="jumpPage(uname)">合作方列表</a></li>
+                <li><a href="" class="active">数据统计表</a></li>
+                <li><a href="" ng-click="resetPwd()">重置用户密码</a></li>
+            </ul>
+            <!--合作方列表 -->
+            <div id="mainContent">
+
+                <!--搜索与新增 -->
+                <form id="searchAppend01">
+                    <div class="conSearchInput">
+                        <label >产品名称:</label>
+                        <input type="text" class="searchInput" ng-model="productName"/>
+                    </div>
+                    <div class="conSearchInput">
+                        <label >渠道号:</label>
+                        <input type="text" class="searchInput" ng-model="channelNum"/>
+                    </div>
+                    <div class="conSearchInput">
+                        <label >公司名:</label>
+                        <input type="text" class="searchInput" ng-model="company"/>
+                    </div>
+
+                    <div class="conSearchInput">
+                        <label >合作类型:</label>
+                        <input type="text" class="searchInput" ng-model="coopType"/>
+                    </div>
+                    <!--<br/>-->
+
+                    <div class="conSearchInput">
+                        <label >起始日期:</label>
+                        <input type="date" class="searchInput" ng-model="effectiveDate"/>
+                    </div>
+                    <div class="conSearchInput">
+                        <label >结束日期:</label>
+                        <input type="date" class="searchInput" ng-model="endDate"/>
+                    </div>
+                    <button class="btn btn-default" style="margin-bottom:2px;" ng-click="search()">搜索</button>
+                    <button class="btn btn-default" style="margin-bottom:2px;" ng-click="refresh()">刷新</button>
+                    <button class="btn btn-success" style="margin-bottom:2px;margin-left:20px" ng-click="inputProductInfo()" id="addEdit">新增</button>
+                </form>
+
+            <table class="table table-bordered table-striped text-center rt" id="table-data">
+                <thead>
+                <tr>
+                    <th ng-click="reverseArr()">日期</th>
+                    <th sort-by="productName">产品名称</th>
+                    <th sort-by="channelNum">渠道号</th>
+                    <th sort-by="company">公司</th>
+                    <th sort-by="cooperateType">合作类型</th>
+                    <th sort-by="price">单价</th>
+                    <th sort-by="installCount">安装量</th>
+                    <th colspan="3">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="data in products track by $index">
+                    <td ng-bind="changeDate(data.effectiveDate)"></td>
+                    <td ng-bind="data.productName"></td>
+                    <td ng-bind="data.channelNum"></td>
+                    <td ng-bind="data.company"></td>
+                    <td ng-bind="data.cooperateType"></td>
+                    <td ng-bind="data.price"></td>
+                    <td class="editArea">
+                        <input type="text" ng-model="data.installCount" ng-disabled="editable" autocomplete="{{autocomplete}}"/>
+                    </td>
+                    <!--<td><a ng-click="openEditWindow()">编辑</a></td>-->
+                    <td><a ng-click="changeDis()">编辑</a></td>
+                    <td><a ng-click="saveEditData($index)">保存</a></td>
+                    <td><a ng-click="abandon($index)">放弃</a></td>
+                    <!--<td><a ng-click="delRow()">删除</a></td>-->
+                </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 其它用户的显示-->
+    <div class="row" id="other_user" style="display:none">
+        <!-- 顶部导航条-->
+        <!--欢迎用户条-->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <p class="navbar-text">欢迎您: <span ng-bind="uname" id="uname"></span></p>
+                    <ul class="nav navbar-nav">
+                        <li><a ng-click="change()">更改密码</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!--搜索与新增 -->
+        <form id="searchAppend">
+            <div class="conSearchInput">
+                <label >产品名称:</label>
+                <input type="text" class="searchInput" ng-model="productName"/>
+            </div>
+            <div class="conSearchInput">
+                <label >渠道号:</label>
+                <input type="text" class="searchInput" ng-model="channelNum"/>
+            </div>
+            <div class="conSearchInput">
+                <label >公司名:</label>
+                <input type="text" class="searchInput" ng-model="company"/>
+            </div>
+
+            <div class="conSearchInput">
+                <label >合作类型:</label>
+                <input type="text" class="searchInput" ng-model="coopType"/>
+            </div>
+            <!--<br/>-->
+
+            <div class="conSearchInput">
+                <label >起始日期:</label>
+                <input type="date" class="searchInput" ng-model="effectiveDate"/>
+            </div>
+            <div class="conSearchInput">
+                <label >结束日期:</label>
+                <input type="date" class="searchInput" ng-model="endDate"/>
+            </div>
+            <button class="btn btn-default" style="margin-bottom:2px;" ng-click="search()">搜索</button>
+            <button class="btn btn-default" style="margin-bottom:2px;" ng-click="refresh()">刷新</button>
+        </form>
+            <!--合作方列表 -->
+                <table class="table table-bordered table-striped text-center rt" id="table-data">
+                    <thead>
+                    <tr>
+                        <th ng-click="reverseArr()">日期</th>
+                        <th sort-by="productName">产品名称</th>
+                        <th sort-by="channelNum">渠道号</th>
+                        <th sort-by="company">公司</th>
+                        <th sort-by="cooperateType">合作类型</th>
+                        <th sort-by="installCount">安装量</th>
+                        <th sort-by="price">单价</th>
+                        <!--<th colspan="0">操作</th>-->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="data in products track by $index">
+                        <td ng-bind="changeDate(data.effectiveDate)"></td>
+                        <td ng-bind="data.productName"></td>
+                        <td ng-bind="data.channelNum"></td>
+                        <td ng-bind="data.company"></td>
+                        <td ng-bind="data.cooperateType"></td>
+                        <td ng-bind="data.installCount"></td>
+                        <td ng-bind="data.price"></td>
+                        <!--<td><a ng-click="openEditWindow()">编辑</a></td>-->
+                        <!--<td><a ng-click="delRow()">删除</a></td>-->
+                    </tr>
+                    </tbody>
+                </table>
+
+    </div>
+
+
+
+<!--登录页面(3) 登录页面-->
+<!-- 透明的遮罩层 -->
+<div class="modal" style="display:block" ng-controller="login" id="login-container">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <span>用户登录</span>
+            <div class="msg-wrap">
+                <div class="msg-warn" ng-show="show">
+                    <b></b>公共场所不建议自动登录,以防账号丢失
+                </div>
+                <div class="msg-error" ng-hide="show">
+                    <b></b>账户名与密码不匹配，请重新输入
+                </div>
+            </div>
+
+            <form id="login-form">
+                <!--<input type="text" class ="alert" value="请保管好您的注册信息,以防丢失"/><br/>-->
+                <input class="icon-uname" type="text" id="user" name="uname" placeholder="请输入用户名" ng-model="uname"/><br/>
+                <input class="icon-pwd" type="password" id="pwd" name="upwd" placeholder="请输入密码" ng-model="pwd"/><br/>
+                <div>
+                    <input type="checkbox" name="autoLogin" class="autoCheckbox " ng-model="select"/>
+                    <label>自动登录</label>
+        </div>
+                <input type="button" id="submit" value="登录" ng-click="verification()"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--更改初始密码-->
+    <div class="modal-dialog _modal-dialog" id="changePwd" ng-controller="changePwd">
+    <div class="modal-content">
+        <div class="title">
+            <span class="lf">更改密码</span>
+            <span class="rt close" ng-click="close()">X</span>
+        </div>
+        <form id="register-form">
+            <div class="input">
+                <label>账&nbsp&nbsp&nbsp&nbsp&nbsp号:</label>
+                <input type="text" class="regInput" ng-model="uname"/>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <label >原始密码:</label>
+                <input type="password" class="regInput" ng-model="pwd" ng-blur="verificationOldPwd()"/>
+            </div>
+            <div style="visibility:{{oldPwdAlert}}">
+                <b class="prompt"></b><sapn>原始密码不对</sapn>
+            </div>
+            <div class="input">
+                <label >&nbsp新&nbsp密&nbsp码:</label>
+                <input type="password" placeholder="请输入新密码" class="regInput" ng-model="firstPwd"/>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <label >确认密码:</label>
+                <input type="password" placeholder="请再输入新密码" class="regInput" ng-model="secondPwd"/>
+            </div>
+            <div ng-show="pwdAlert">
+                <b class="prompt"></b><sapn>密码长度必须大于等于6位</sapn>
+            </div>
+            <div ng-hide="pwdAlert">
+                <b class="prompt"></b><sapn>两次输入的密码不一致</sapn>
+            </div>
+            <div id="confirm">
+                <input type="button" class="inputbtn submit lf" value="确认" ng-click="checkIpntPwd()"/>
+                <input type="button" class="inputbtn return rt" value="返回" ng-click="close()"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    <!--重置用户密码-->
+    <div class="modal-dialog _modal-dialog" id="resetPwd" ng-controller="resetPwd">
+        <div class="modal-content">
+            <div class="title">
+                <span class="lf">重置用户密码</span>
+                <span class="rt close" ng-click="close()">X</span>
+            </div>
+            <form id="register-form_Reset">
+                <div class="input">
+                    <label>账&nbsp&nbsp&nbsp&nbsp&nbsp号:</label>
+                    <input type="text" class="regInput" ng-model="uname" ng-blur="checkIsUser()"/>
+                </div>
+                <div style="visibility:{{isUser}}">
+                    <b class="prompt"></b><sapn ng-bind="isUserMsg"></sapn>
+                </div>
+                <div class="input">
+                    <label >&nbsp新&nbsp密&nbsp码:</label>
+                    <input type="password" placeholder="请输入新密码" class="regInput" ng-model="firstPwd"/>
+                </div>
+                <div style="visibility:hidden">
+                    <b class="prompt"></b><sapn></sapn>
+                </div>
+                <div class="input">
+                    <label >确认密码:</label>
+                    <input type="password" placeholder="请再输入新密码" class="regInput" ng-model="secondPwd"/>
+                </div>
+                <div ng-show="pwdAlert">
+                    <b class="prompt"></b><sapn>密码长度必须大于等于6位</sapn>
+                </div>
+                <div ng-hide="pwdAlert">
+                    <b class="prompt"></b><sapn>两次输入的密码不一致</sapn>
+                </div>
+                <div style="visibility:{{resetSucc}}">
+                    <b class="prompt"></b><sapn ng-bind="resetSuccess"></sapn>
+                </div>
+                <div id="confirm_reset">
+                    <input type="button" class="inputbtn submit lf" value="确认" ng-click="checkIpntPwd()"/>
+                    <input type="button" class="inputbtn return rt" value="返回" ng-click="close()"/>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <!--新增输入窗口-->
+<div class="modal-dialog _modal-dialog editWindow" id="inputProductInfo" ng-controller="editBack">
+    <div class="modal-content">
+        <div class="title">
+            <span class="lf">新增输入</span>
+            <span class="rt close" ng-click="close()">X</span>
+        </div>
+        <form id="eidtBack-form">
+            <div class="input">
+            <label>生效日期:</label>
+            <input type="date" class="regInput" ng-model="effectiveDate" ng-focus="verifiedDate()"/>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <!-- <div class="input">
+                <label>结束日期:</label>
+                <input type="date" class="regInput" ng-model="endDate" ng-blur="checkDate()"/>
+            </div>
+            <div style="visibility:{{dateShow}}">
+                <b class="prompt"></b><sapn ng-bind="dateMsg"></sapn>
+            </div> -->
+            <div class="input" style="position:relative;">
+                <label >产品名称:</label>
+                <input type="text" class="regInput" ng-model="productName" ng-focus="isVisi='hidden'" ng-keydown="autoAppendKW()"/>
+                <ul class="autoAppend" data-name="productName">
+
+                </ul>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <label >&nbsp渠&nbsp道&nbsp号:</label>
+                <input type="text" class="regInput" ng-model="channelNum" ng-focus="isVisi='hidden'"/>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <leable>合作类型:</leable>
+                <select name="type" ng-model="cooperateType" class="regSelect" ng-focus="isVisi='hidden'">
+                    <option value="0" selected="selected">CPA</option>
+                    <option value="1">CPC</option>
+                    <option value="2">CPI</option>
+                    <option value="3">CPT</option>
+                </select>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <label >公司名称:</label>
+                <input type="text" class="regInput" ng-model="company" ng-focus="isVisi='hidden'"/>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <label >公司简称:</label>
+                <input type="text" class="regInput" ng-model="compAbbreviation" ng-focus="isVisi='hidden'"/>
+            </div>
+            <div style="visibility:hidden">
+                <b class="prompt"></b><sapn></sapn>
+            </div>
+            <div class="input">
+                <label >单&nbsp&nbsp&nbsp&nbsp价:</label>
+                <input type="text" class="regInput" ng-model="price" ng-focus="isVisi='hidden'" ng-blur="verifiedPrice()"/>
+            </div>
+            <div style="visibility:{{veriPrice}}">
+                <b class="prompt"></b><sapn ng-bind="priceAlert"></sapn>
+            </div>
+            <div class="input">
+                <label >安&nbsp装&nbsp量:</label>
+                <input type="text" class="regInput" ng-model="installCount" ng-focus="isVisi='hidden'" ng-blur="verifiedInstall()"/>
+            </div>
+            <div style="visibility:{{isVisi}}">
+                <b class="prompt"></b><sapn ng-bind="isSucc"></sapn>
+            </div>
+            <div id="editConfirm">
+                <input type="button" class="inputbtn submit lf" value="保存" ng-click="save()"/>
+                <input type="button" class="inputbtn return rt" value="返回" ng-click="close()"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--弹出框(查找不到数据时)-->
+<div class="modal-dialog" id="selectAlert" >
+    <div class="modal-content">
+        <div class="title">
+            <span class="lf">弹出框</span>
+            <span class="rt close" ng-click="closeAlert()">X</span>
+        </div>
+        <div class="alertText">很抱歉! 没有查找到你符合你要求的数据!!</div>
+    </div>
+</div>
+
+
+    <!--合作方新增/编辑页面 -->
+    <!--<div id="editContent" class="modal-dialog" style="display:none;" ng-controller="editContent">  <!-- ng-controller="editContent" -->
+        <!--<div class="modal-content">
+            <span>用户录入</span>
+            <form id="input-form">
+                <div class="input">
+                    <label >产品名称:</label>
+                    <input type="text" class="regInput" ng-model="productName" ng-focus="isShow='hidden'"/>
+                </div>
+                <ul style="visibility:visible">
+
+                </ul>
+                <div class="input">
+                    <label >渠&nbsp道&nbsp号:</label>
+                    <input type="text" class="regInput" ng-model="channelNum" ng-focus="isShow='hidden'"/>
+                </div>
+                <ul style="visibility:hidden">
+
+                </ul>
+                <div class="input">
+                    <label >公&nbsp&nbsp&nbsp&nbsp司:</label>
+                    <input type="text" class="regInput" ng-model="company" ng-focus="isShow='hidden'"/>
+                </div>
+                <ul style="visibility:hidden">
+
+                </ul>
+
+                <div class="input">
+                    <label >公司简称:</label>
+                    <input type="text" class="regInput" ng-model="compAbbreviation" ng-focus="isShow='hidden'"/>
+                </div>
+                <ul style="visibility:hidden">
+
+                </ul>
+
+                <div class="input">
+                    <leable>合作类型:</leable>
+                    <select name="type" ng-model="cooperateType" class="regSelect" ng-focus="isShow='hidden'">
+                        <option value="0">CPA</option>
+                        <option value="1">CPC</option>
+                        <option value="2">CPI</option>
+                        <option value="3">CPT</option>
+                    </select>
+                </div>
+                <ul style="visibility:hidden">
+
+                </ul>
+                <div class="input">
+                    <label >单&nbsp&nbsp&nbsp&nbsp价:</label>
+                    <input type="text" class="regInput" ng-model="price" ng-focus="isShow='hidden'"/>
+                </div>
+                <ul style="visibility:hidden">
+
+                </ul>
+                <div class="input">
+                    <label >生效时间:</label>
+                    <input type="date" class="regInput" ng-model="effectiveDate" ng-focus="isShow='hidden'"/>
+                </div>
+                <div class="input">
+                    <label >结束时间:</label>
+                    <input type="date" value="" class="regInput" ng-model="endDate" ng-focus="isShow='hidden'"/>
+                </div>
+                <div style="visibility:{{isShow}}" class="marginLeft">
+                    <b class=""></b><sapn ng-bind="insertMsg"></sapn>
+                </div>
+                <div class="saveReturn">
+                    <input type="submit" class="btn btn-success width45" value="保存" ng-click="save()"/>
+                    <button class="btn btn-default rt width45" ng-click="close()">返回</button>
+                </div>
+            </form>
+        </div>
+    </div>-->
+
+
+<script src="js/angular.min.js"></script>
+<script src="js/jquery-1.11.2.min.js"></script>
+<script src="js/dataQuery.min.js"></script>
+</body>
+</html>

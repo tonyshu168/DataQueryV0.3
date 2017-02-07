@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/js/dataQuery_shu.min.js" />
+        <item url="file://$PROJECT_DIR$/js/angular.min.js" />
+        <item url="file://$PROJECT_DIR$/js/dataQuery.min.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/js/dataQuery.min.min.js" />
+      <root url="file://$PROJECT_DIR$/js/dataQuery_shu.min.js" />
+      <root url="file://$PROJECT_DIR$/js/angular.min.js" />
+      <root url="file://$PROJECT_DIR$/js/dataQuery.min.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

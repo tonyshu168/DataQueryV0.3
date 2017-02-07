@@ -1,0 +1,17 @@
+.edit{
+    background:transparent;
+    text-align:center;
+}
+
+#table-data tbody tr td input{
+    background:transparent;
+    text-align:center;
+    width:80px;
+    outline:none;
+}
+
+.a_link{
+    display:block;
+    width:40px;
+}
+

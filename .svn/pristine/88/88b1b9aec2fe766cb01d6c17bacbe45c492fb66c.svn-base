@@ -1,0 +1,39 @@
+<?php
+//header("Content-Type:application/text;charset=urf-8");
+
+$effectiveDate = $_REQUEST["effeDate"];
+if(empty($effectiveDate)){$effectiveDate=products.effectiveDate;}
+
+$endDate = $_REQUEST["endDate"];
+if(empty($endDate)){$endDate = products.endDate;}
+
+$productName = $_REQUEST["prodName"];
+if(empty($productName)) {$productName = products.productName;}
+
+$channelNum = $_REQUEST["chanNum"];
+if(empty($channelNum)){$channelNum = products.channelNum;}
+
+$cooperateType = $_REQUEST["coopType"];
+if(empty($cooperateType)){$cooperateType = products.cooperateType;}
+
+$price = $_REQUEST["price"];
+if(empty($price)){$price = products.price;}
+
+$installCount = $_REQUEST["installCount"];
+if(empty($installCount)){$installCount = products.installCount;}
+
+$did = $_REQUEST["id"];
+
+$conn = mysqli_connect("127.0.0.1","root", "apy1432016!", "dataquery", 3306);
+//$conn = mysqli_connect("127.0.0.1","root", "", "dataquery", 3306);
+
+mysqli_query($conn,"SET NAMES UTF8");
+
+$sql = "UPDATE products set effectiveDate=$effectiveDate,endDate=$endDate,productName='$productName',
+    channelNum='$channelNum',cooperateType='$cooperateType',
+    price=$price,installCount=$installCount WHERE did=$did";
+
+$result = mysqli_query($conn,$sql);
+
+if($result){echo "Update Succ!";}
+else{ echo "Update Err!".$sql;}
